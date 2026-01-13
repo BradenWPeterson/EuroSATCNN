@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EuroSAT Land Use Classification | CNN Project</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 1.3em;
+            opacity: 0.95;
+        }
+
+        .highlight {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px 30px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 1.4em;
+            font-weight: 600;
+        }
+
+        section {
+            background: white;
+            margin: 40px auto;
+            padding: 50px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #667eea;
+            font-size: 2.2em;
+            margin-bottom: 25px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #764ba2;
+            font-size: 1.6em;
+            margin: 30px 0 15px 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .stat-card .number {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .label {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .methodology-list {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .methodology-list li {
+            margin: 15px 0;
+            padding-left: 10px;
+            font-size: 1.1em;
+        }
+
+        .methodology-list strong {
+            color: #667eea;
+        }
+
+        .image-container {
+            margin: 40px 0;
+            text-align: center;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .image-caption {
+            margin-top: 15px;
+            font-style: italic;
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .key-findings {
+            background: #e8f4f8;
+            padding: 25px;
+            border-radius: 8px;
+            border-left: 4px solid #2196F3;
+            margin: 25px 0;
+        }
+
+        .key-findings h4 {
+            color: #2196F3;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .key-findings ul {
+            margin-left: 20px;
+        }
+
+        .key-findings li {
+            margin: 10px 0;
+        }
+
+        .architecture-box {
+            background: #f0f4ff;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 25px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.8;
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 60px 50px;
+        }
+
+        .cta-section h2 {
+            color: white;
+            border: none;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 40px;
+            margin: 10px;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1.1em;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            background: white;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            section {
+                padding: 30px 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🛰️ EuroSAT Land Use Classification</h1>
+            <p>Deep Learning for Satellite Image Analysis</p>
+            <div class="highlight">97.90% Test Accuracy</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <section id="overview">
+            <h2>Project Overview</h2>
+            <p style="font-size: 1.2em; line-height: 1.8;">
+                This project implements a Convolutional Neural Network (CNN) to automatically classify satellite images 
+                into 10 different land use categories. Using the EuroSAT dataset containing 27,000 labeled satellite images, 
+                the model learns to distinguish between forests, highways, residential areas, crops, and other land types 
+                with exceptional accuracy.
+            </p>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="number">27,000</div>
+                    <div class="label">Training Images</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">10</div>
+                    <div class="label">Land Use Categories</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">97.90%</div>
+                    <div class="label">Test Accuracy</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">686,922</div>
+                    <div class="label">Model Parameters</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="methodology">
+            <h2>Methodology</h2>
+            
+            <h3>Dataset & Preprocessing</h3>
+            <ul class="methodology-list">
+                <li><strong>Dataset:</strong> EuroSAT RGB satellite images (64x64 pixels)</li>
+                <li><strong>Data Split:</strong> 70% training (18,900) / 15% validation (4,050) / 15% test (4,050)</li>
+                <li><strong>Normalization:</strong> Pixel values scaled from 0-255 to 0-1</li>
+                <li><strong>Data Augmentation:</strong> Random horizontal/vertical flips and 90° rotations applied to training data</li>
+                <li><strong>Batch Size:</strong> 32 images per batch</li>
+            </ul>
+
+            <h3>Model Architecture</h3>
+            <div class="architecture-box">
+Input Layer: 64×64×3 RGB images<br>
+↓<br>
+Conv2D (32 filters, 3×3) + BatchNorm + MaxPool → 31×31×32<br>
+Conv2D (64 filters, 3×3) + BatchNorm + MaxPool → 14×14×64<br>
+Conv2D (128 filters, 3×3) + BatchNorm + MaxPool → 6×6×128<br>
+Conv2D (256 filters, 3×3) + BatchNorm + MaxPool → 2×2×256<br>
+↓<br>
+Flatten → 1,024 neurons<br>
+Dense (256) + Dropout (0.5)<br>
+Dense (128) + Dropout (0.3)<br>
+↓<br>
+Output Layer: Dense (10) + Softmax
+            </div>
+
+            <h3>Training Configuration</h3>
+            <ul class="methodology-list">
+                <li><strong>Optimizer:</strong> Adam (adaptive learning rate)</li>
+                <li><strong>Loss Function:</strong> Sparse Categorical Crossentropy</li>
+                <li><strong>Callbacks:</strong> Early Stopping, ReduceLROnPlateau, ModelCheckpoint</li>
+                <li><strong>Training Time:</strong> 50 epochs (~10 minutes)</li>
+                <li><strong>Best Model:</strong> Saved from epoch 47</li>
+            </ul>
+        </section>
+
+        <section id="results">
+            <h2>Results & Analysis</h2>
+
+            <h3>Training History</h3>
+            <div class="image-container">
+                <img src="SatelliteProjectAccuracyLoss.png" alt="Model Training History - Accuracy and Loss over 50 epochs">
+                <p class="image-caption">
+                    Training and validation accuracy/loss curves showing model convergence. Note the stabilization 
+                    after learning rate reduction at epoch 20.
+                </p>
+            </div>
+
+            <div class="key-findings">
+                <h4>📊 Key Observations from Training</h4>
+                <ul>
+                    <li><strong>Strong Learning:</strong> Model improved from 55% to 96% training accuracy</li>
+                    <li><strong>No Overfitting:</strong> Training and validation accuracy remained closely aligned</li>
+                    <li><strong>Effective Callbacks:</strong> Learning rate reduction at epoch 20 stabilized validation performance</li>
+                    <li><strong>Convergence:</strong> Both losses stabilized around 0.1, indicating optimal learning</li>
+                </ul>
+            </div>
+
+            <h3>Confusion Matrix</h3>
+            <div class="image-container">
+                <img src="SatelliteProjectConfusionMatrix.png" alt="Confusion Matrix showing per-class prediction accuracy">
+                <p class="image-caption">
+                    Confusion matrix on test set (4,050 images). Diagonal values show correct predictions.
+                </p>
+            </div>
+
+            <div class="key-findings">
+                <h4>🎯 Per-Class Performance Highlights</h4>
+                <ul>
+                    <li><strong>Best Performers:</strong> SeaLake (100%), Residential (100%)</li>
+                    <li><strong>Common Confusions:</strong> HerbaceousVegetation ↔ PermanentCrop (visually similar vegetation types)</li>
+                    <li><strong>Insight:</strong> Model errors occur primarily between semantically similar categories, demonstrating intelligent classification</li>
+                    <li><strong>Robustness:</strong> Only ~90 misclassifications out of 4,050 test images</li>
+                </ul>
+            </div>
+
+            <h3>Final Test Performance</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="number">97.90%</div>
+                    <div class="label">Test Accuracy</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">0.0565</div>
+                    <div class="label">Test Loss</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">3,965</div>
+                    <div class="label">Correct Predictions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">85</div>
+                    <div class="label">Misclassifications</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="technologies">
+            <h2>Technologies Used</h2>
+            <ul class="methodology-list">
+                <li><strong>TensorFlow/Keras:</strong> Deep learning framework for model building and training</li>
+                <li><strong>TensorFlow Datasets:</strong> EuroSAT dataset loading and management</li>
+                <li><strong>NumPy:</strong> Numerical computations and array operations</li>
+                <li><strong>Scikit-learn:</strong> Evaluation metrics (confusion matrix, classification report)</li>
+                <li><strong>Matplotlib/Seaborn:</strong> Data visualization and result plotting</li>
+                <li><strong>Python 3:</strong> Primary programming language</li>
+            </ul>
+        </section>
+
+        <section id="learnings">
+            <h2>Key Learnings & Insights</h2>
+            <ul class="methodology-list">
+                <li><strong>Data Augmentation Impact:</strong> Random transformations significantly improved generalization by simulating real-world variations</li>
+                <li><strong>Batch Normalization Benefits:</strong> Stabilized training and allowed for faster convergence</li>
+                <li><strong>Callback Effectiveness:</strong> Automated learning rate reduction prevented plateaus and improved final accuracy</li>
+                <li><strong>Architecture Design:</strong> Progressive filter increases (32→64→128→256) effectively captured hierarchical features</li>
+                <li><strong>Class Imbalance Awareness:</strong> Similar vegetation categories required careful analysis to understand model behavior</li>
+            </ul>
+        </section>
+
+        <section class="cta-section">
+            <h2>View the Code</h2>
+            <p style="font-size: 1.2em; margin-bottom: 30px;">
+                Explore the complete implementation including data preprocessing, model architecture, 
+                training loops, and evaluation metrics.
+            </p>
+            <a href="https://github.com/yourusername/eurosat-classifier" class="btn">
+                📂 GitHub Repository
+            </a>
+            <a href="https://github.com/yourusername/eurosat-classifier/blob/main/notebooks/eurosat_cnn.ipynb" class="btn">
+                📓 Jupyter Notebook
+            </a>
+        </section>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Your Name | Built with TensorFlow & Keras</p>
+        <p style="margin-top: 10px; font-size: 0.9em;">
+            Dataset: <a href="https://github.com/phelber/eurosat" style="color: #667eea;">EuroSAT</a> | 
+            Framework: <a href="https://www.tensorflow.org/" style="color: #667eea;">TensorFlow</a>
+        </p>
+    </footer>
+</body>
+</html>
