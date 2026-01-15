@@ -210,13 +210,6 @@ eurosat-classifier/
 ├── requirements.txt            # Python dependencies
 ├── notebooks/
 │   └── eurosat_cnn.ipynb      # Jupyter notebook with full workflow
-├── src/
-│   ├── model.py               # Model architecture
-│   ├── train.py               # Training script
-│   ├── evaluate.py            # Evaluation utilities
-│   └── utils.py               # Helper functions
-├── models/
-│   └── best_model.keras       # Trained model weights
 └── images/
     ├── training_history.png   # Training curves
     └── confusion_matrix.png   # Confusion matrix visualization
